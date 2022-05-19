@@ -9,7 +9,6 @@ import List from '@mui/material/List';
 import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
-import Badge from '@mui/material/Badge';
 import Container from '@mui/material/Container';
 import TextField from '@mui/material/TextField';
 import FormControl from '@mui/material/FormControl'
@@ -22,12 +21,12 @@ import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button'
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import NotificationsIcon from '@mui/icons-material/Notifications';
 import { MainListItems } from './listItems';
 import Orders from './Orders';
 import { AdminsContext, reducer } from '../../context/adminContext';
 import { useNavigate } from 'react-router';
 import { validate } from '../../validate/validate';
+import { useEffect } from 'react';
 
 const drawerWidth: number = 240;
 
@@ -117,9 +116,17 @@ function DashboardContent() {
     context.admins.forEach(admin => {
       if (admin.isLogIn) {
         admin.isLogIn = !admin.isLogIn
+        let option = {
+          method: "PATCH",
+          headers: {
+            'Content-type': 'application/json; charset=UTF-8'
+          },
+          body: JSON.stringify(admin)
+        }
+        fetch("http://localhost:5000/admins/" + admin.id, option)
+        .then((res) => res.json())
       }
     })
-    localStorage.setItem('state', JSON.stringify(context))
   }
 
   return (

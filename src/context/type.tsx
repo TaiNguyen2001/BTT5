@@ -2,7 +2,8 @@ export interface Actions {
     type: "addAdmin" 
     | "addOrder" 
     | "updateOrder"
-    | "removeOrder",
+    | "removeOrder"
+    | "FetchData",
     payload: any
   }
   

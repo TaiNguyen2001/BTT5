@@ -30,9 +30,17 @@ export default function SignIn() {
           if (admin.userName === email && admin.password === password) {
             navigate('/dashboard')
             admin.isLogIn = true
+            let option = {
+              method: "PATCH",
+              headers: {
+                'Content-type': 'application/json; charset=UTF-8'
+              },
+              body: JSON.stringify(admin)
+            }
+            fetch("http://localhost:5000/admins/" + admin.id, option)
+            .then((res) => res.json())
           }
         })
-        localStorage.setItem('state', JSON.stringify(context))
       }
       setEmail("")
       setPassword("")

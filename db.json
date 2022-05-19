@@ -1,0 +1,21 @@
+{
+  "admins": [
+    {
+      "id": "0.e10ebdf825465",
+      "userName": "user",
+      "password": "124456",
+      "isLogIn": true,
+      "orders": [
+        {
+          "date": "12",
+          "name": "Tai",
+          "address": "Hà nội",
+          "cardType": "mc",
+          "cardNum": "12345678",
+          "saleAmount": "123",
+          "id": "0.bb69e73ccd9f7"
+        }
+      ]
+    }
+  ]
+}

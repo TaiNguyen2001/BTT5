@@ -1,5 +1,6 @@
 import { createContext, useReducer } from "react"
 import { State, Actions, Admin, Order, } from './type'
+import { useEffect } from "react"
 
 const intialState: State = {
   admins: []
@@ -7,6 +8,10 @@ const intialState: State = {
 
 export const reducer = function(state: State, action: Actions) {
   switch (action.type) {
+    case "FetchData":{
+      const newState = { ...state, admins: action.payload }
+      return newState
+    }
     case 'addAdmin': {
       const newAdmin : Admin = {
         id : Math.random().toString(16),
@@ -19,11 +24,20 @@ export const reducer = function(state: State, action: Actions) {
         ...state,
         admins: [...state.admins, newAdmin]
       }
-      localStorage.setItem('state', JSON.stringify(newState))
+      let option = {
+        method: "POST",
+        headers: {
+          'Content-type': 'application/json; charset=UTF-8'
+        },
+        body: JSON.stringify(newAdmin)
+      }
+      fetch("http://localhost:5000/admins", option)
+      .then((res) => res.json())
       return newState
     }
     case 'addOrder': {
       let newOrders: Order[]
+      let id : string
       let updatedAdmins: Admin[]
       const order : Order = {
         date: action.payload.date,
@@ -36,8 +50,18 @@ export const reducer = function(state: State, action: Actions) {
       }
       updatedAdmins = state.admins.map(admin => {
         if (admin.isLogIn) {
+          id = admin.id
           newOrders = [...admin.orders, order]
           const newAdmin: Admin = {...admin, orders: newOrders}
+          let option = {
+            method: "PATCH",
+            headers: {
+              'Content-type': 'application/json; charset=UTF-8'
+            },
+            body: JSON.stringify(newAdmin)
+          }
+          fetch("http://localhost:5000/admins/" + id , option)
+          .then((res) => res.json())
           return newAdmin
         }
         return admin
@@ -45,7 +69,6 @@ export const reducer = function(state: State, action: Actions) {
       const newState = {...state,
         admins: updatedAdmins
       }
-      localStorage.setItem('state', JSON.stringify(newState))
       window.location.reload()
       return newState
     }
@@ -68,6 +91,15 @@ export const reducer = function(state: State, action: Actions) {
               return order
             })
           const updatedAdmin: Admin = {...admin, orders: updatedOrder}
+          let option = {
+            method: "PATCH",
+            headers: {
+              'Content-type': 'application/json; charset=UTF-8'
+            },
+            body: JSON.stringify(updatedAdmin)
+          }
+          fetch("http://localhost:5000/admins/" + admin.id , option)
+          .then((res) => res.json())
           return updatedAdmin
         }
         return admin
@@ -75,7 +107,6 @@ export const reducer = function(state: State, action: Actions) {
       const newState = {...state,
         admins: updatedAdmins
       }
-      localStorage.setItem('state', JSON.stringify(newState))
       window.location.reload()
       return newState
     }
@@ -87,6 +118,15 @@ export const reducer = function(state: State, action: Actions) {
               return order.id !== action.payload.id
             })
           const updatedAdmin: Admin = {...admin, orders: updatedOrder}
+          let option = {
+            method: "PATCH",
+            headers: {
+              'Content-type': 'application/json; charset=UTF-8'
+            },
+            body: JSON.stringify(updatedAdmin)
+          }
+          fetch("http://localhost:5000/admins/" + admin.id , option)
+          .then((res) => res.json())
           return updatedAdmin
         }
         return admin
@@ -94,7 +134,6 @@ export const reducer = function(state: State, action: Actions) {
       const newState = {...state,
         admins: updatedAdmins
       }
-      localStorage.setItem('state', JSON.stringify(newState))
       window.location.reload()
       return newState
     }
@@ -106,9 +145,11 @@ export const reducer = function(state: State, action: Actions) {
 
 export const AdminsContext = createContext(intialState)
 export const AdminsProvider  = ({children}:any) => {
-  const [state,] = useReducer(reducer, intialState, () => {
-    const localData = localStorage.getItem('state')
-    return localData ? JSON.parse(localData) : intialState
-  })
+  const [state,dispatch] = useReducer(reducer, intialState)
+  useEffect(() => {
+    fetch("http://localhost:5000/admins")
+      .then(response => response.json())
+      .then(res => dispatch({type: 'FetchData', payload: res}));
+  }, [])
   return <AdminsContext.Provider value={state}>{children}</AdminsContext.Provider>
 }

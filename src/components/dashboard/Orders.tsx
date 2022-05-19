@@ -16,8 +16,7 @@ export default function Orders() {
     })
     return loggedAdmin?.orders
   }
-  const rows = getData(context)
-
+  let rows = getData(context)
   return (
     <React.Fragment>
       <Title>Orders</Title>
